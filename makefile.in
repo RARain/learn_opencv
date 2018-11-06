@@ -1,0 +1,11 @@
+CXX         = g++
+CXXFLAGS    = -std=c++11 -g -fPIC -m64 -O3 -fopenmp -Wall
+INCS	= -I/usr/local/include \
+		  -I/usr/local/include/opencv \
+		  -I/usr/local/include/opencv2 \
+		  -I/usr/include/x86_64-linux-gnu \
+		  -I/usr/include/x86_64-linux-gnu/qt5
+
+LIBS	= `pkg-config --libs opencv` \
+		  -L$(HOME)/anaconda3/lib -licui18n -licuuc -licudata \
+		  -L$(HOME)/anaconda3/lib -lQt5Gui -lQt5Core -lQt5Widgets -lQt5OpenGL -lQt5Test
