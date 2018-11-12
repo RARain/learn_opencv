@@ -10,3 +10,7 @@
 3.roi/*.o
 3.roi/core
 3.roi/roi
+
+4.segmentation/*.o
+4.segmentation/core
+4.segmentation/segmentation
