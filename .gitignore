@@ -1,0 +1,12 @@
+1.loadimages/*.o
+1.loadimages/core
+1.loadimages/load_1
+1.loadimages/load_2
+
+2.blur/*.o
+2.blur/core
+2.blur/blur
+
+3.roi/*.o
+3.roi/core
+3.roi/roi
