@@ -14,3 +14,7 @@
 4.segmentation/*.o
 4.segmentation/core
 4.segmentation/segmentation
+
+5.imread/*.o
+5.imread/core
+5.imread/imread
