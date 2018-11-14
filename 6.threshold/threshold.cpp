@@ -90,7 +90,7 @@ void AppThreshold::Show(ThresholdTypes type, ThresholdTypes flag, double thresh,
 	m_flag = flag;
 	m_thresh = thresh;
 	m_maxval = maxval;
-	threshold(m_image_src, m_image_dst, m_thresh, m_maxval, m_type | m_flag);
+	double ret_threshold = threshold(m_image_src, m_image_dst, m_thresh, m_maxval, m_type | m_flag);
 	imshow(m_winname, m_image_dst);
 	String overlay;
 	overlay += ThresholdTypeName(type);
@@ -111,6 +111,9 @@ void AppThreshold::Show(ThresholdTypes type, ThresholdTypes flag, double thresh,
 		overlay += ThresholdTypeDescription(THRESH_TRIANGLE);
 		overlay += "\n";
 	}
+	char tmp[256] = "";
+	sprintf(tmp, "thresh(%f) maxval(%f) threshold(%f)", m_thresh, m_maxval, ret_threshold);
+	overlay += tmp;
 	displayOverlay(m_winname, overlay);
 }
 
