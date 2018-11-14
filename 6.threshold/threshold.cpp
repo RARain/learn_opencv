@@ -20,8 +20,7 @@ class AppThreshold
 	String ThresholdTypeName(ThresholdTypes type);
 	String ThresholdTypeDescription(ThresholdTypes type);
 	static void TrackbarCallbackType(int pos, void *userdata);
-	static void TrackbarCallbackFlagOtsu(int pos, void *userdata);
-	static void TrackbarCallbackFlagTriangle(int pos, void *userdata);
+	static void TrackbarCallbackFlag(int pos, void *userdata);
 	static void TrackbarCallbackThresh(int pos, void *userdata);
 	static void TrackbarCallbackMaxval(int pos, void *userdata);
 
@@ -35,8 +34,7 @@ class AppThreshold
 	String m_imgname;
 	String m_winname;
 	String m_trackbarname_type;
-	String m_trackbarname_flag_otsu;
-	String m_trackbarname_flag_triangle;
+	String m_trackbarname_flag;
 	String m_trackbarname_thresh;
 	String m_trackbarname_maxval;
 };
@@ -50,22 +48,20 @@ void AppThreshold::Run(const String &filename)
 	namedWindow(m_winname, WINDOW_NORMAL); // 窗口控制大小
 
 	m_imgname = filename;
-	m_image_src = imread(m_imgname, ImreadModes::IMREAD_COLOR);
+	m_image_src = imread(m_imgname, ImreadModes::IMREAD_GRAYSCALE);
 
 	m_trackbarname_type = "Type";
 	int pos_type = 0;
 	int count_type = 4;
 	createTrackbar(m_trackbarname_type, m_winname, &pos_type, count_type, TrackbarCallbackType, (void *)this);
 
-	m_trackbarname_flag_otsu = "flag: otsu";
-	int pos_flag_otsu = 0;
-	int count_flag_otsu = 1;
-	createTrackbar(m_trackbarname_flag_otsu, m_winname, &pos_flag_otsu, count_flag_otsu, TrackbarCallbackFlagOtsu, (void *)this);
-
-	m_trackbarname_flag_triangle = "flag: triangle";
-	int pos_flag_triangle = 0;
-	int count_flag_triangle = 1;
-	createTrackbar(m_trackbarname_flag_triangle, m_winname, &pos_flag_triangle, count_flag_triangle, TrackbarCallbackFlagTriangle, (void *)this);
+	if (m_image_src.type() == CV_8UC1)
+	{
+		m_trackbarname_flag = "flag";
+		int pos_flag = 0;
+		int count_flag = 2;
+		createTrackbar(m_trackbarname_flag, m_winname, &pos_flag, count_flag, TrackbarCallbackFlag, (void *)this);
+	}
 
 	m_trackbarname_thresh = "Thresh";
 	int pos_thresh = 0;
@@ -73,7 +69,7 @@ void AppThreshold::Run(const String &filename)
 	createTrackbar(m_trackbarname_thresh, m_winname, &pos_thresh, count_thresh, TrackbarCallbackThresh, (void *)this);
 
 	m_trackbarname_maxval = "Maxval";
-	int pos_maxval = 0;
+	int pos_maxval = 255;
 	int count_maxval = 255;
 	createTrackbar(m_trackbarname_maxval, m_winname, &pos_maxval, count_maxval, TrackbarCallbackMaxval, (void *)this);
 
@@ -99,14 +95,20 @@ void AppThreshold::Show(ThresholdTypes type, ThresholdTypes flag, double thresh,
 	String overlay;
 	overlay += ThresholdTypeName(type);
 	overlay += "\n";
+	overlay += ThresholdTypeDescription(type);
+	overlay += "\n";
 	if(m_flag & THRESH_OTSU)
 	{
 		overlay += ThresholdTypeName(THRESH_OTSU);
+		overlay += "\n";
+		overlay += ThresholdTypeDescription(THRESH_OTSU);
 		overlay += "\n";
 	}
 	if(m_flag & THRESH_TRIANGLE)
 	{
 		overlay += ThresholdTypeName(THRESH_TRIANGLE);
+		overlay += "\n";
+		overlay += ThresholdTypeDescription(THRESH_TRIANGLE);
 		overlay += "\n";
 	}
 	displayOverlay(m_winname, overlay);
@@ -134,6 +136,19 @@ ThresholdTypes AppThreshold::ThresholdType(int pos)
 		return THRESH_TRIANGLE;
 	default:
 		return THRESH_MASK;
+	}
+}
+
+ThresholdTypes AppThreshold::ThresholdFlag(int pos)
+{
+	switch (pos)
+	{
+	case 1:
+		return THRESH_OTSU;
+	case 2:
+		return THRESH_TRIANGLE;
+	default:
+		return (ThresholdTypes)0;
 	}
 }
 
@@ -195,22 +210,12 @@ void AppThreshold::TrackbarCallbackType(int pos, void *usedata)
 		thisobj->Show(type, thisobj->m_flag, thisobj->m_thresh, thisobj->m_maxval);
 }
 
-void AppThreshold::TrackbarCallbackFlagOtsu(int pos, void *usedata)
+void AppThreshold::TrackbarCallbackFlag(int pos, void *usedata)
 {
 	AppThreshold *thisobj = (AppThreshold *)usedata;
-	int flag_obj = thisobj->m_flag & THRESH_OTSU;
-	int flag_pos = 0 == pos ? 0 : THRESH_OTSU;
-	if (flag_obj != flag_pos)
-		thisobj->Show(thisobj->m_type, (ThresholdTypes)(thisobj->m_flag & (~THRESH_OTSU) & flag_pos), thisobj->m_thresh, thisobj->m_maxval);
-}
-
-void AppThreshold::TrackbarCallbackFlagTriangle(int pos, void *usedata)
-{
-	AppThreshold *thisobj = (AppThreshold *)usedata;
-	int flag_obj = thisobj->m_flag & THRESH_TRIANGLE;
-	int flag_pos = 0 == pos ? 0 : THRESH_TRIANGLE;
-	if (flag_obj != flag_pos)
-		thisobj->Show(thisobj->m_type, (ThresholdTypes)(thisobj->m_flag & (~THRESH_TRIANGLE) & flag_pos), thisobj->m_thresh, thisobj->m_maxval);
+	ThresholdTypes flag = thisobj->ThresholdFlag(pos);
+	if (flag != thisobj->m_flag)
+		thisobj->Show(thisobj->m_type, flag, thisobj->m_thresh, thisobj->m_maxval);
 }
 
 void AppThreshold::TrackbarCallbackThresh(int pos, void *usedata)
