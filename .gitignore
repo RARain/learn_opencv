@@ -22,3 +22,7 @@
 6.threshold/*.o
 6.threshold/core
 6.threshold/threshold
+
+7.resize/*.o
+7.resize/core
+7.resize/resize
