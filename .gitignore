@@ -26,3 +26,7 @@
 7.resize/*.o
 7.resize/core
 7.resize/resize
+
+8.rectangle/*.o
+8.rectangle/core
+8.rectangle/rectangle
